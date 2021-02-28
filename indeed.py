@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 
 r=requests.get("https://kr.indeed.com/jobs?q=python")
 b=BeautifulSoup(r.text,"html.parser")
+
 def extract_indeed_pages():
- 
   find_class=b.find("div",{"class":"pagination"})
   get_anchor=find_class.find_all("a")
 
@@ -31,17 +31,23 @@ def extract_indeed_pages():
   return last_page"""
 
 
+def extract_job(html):
+  c=html.find("h2",{"class":"title"}).find("a").text
+  company=html.find("div",{"class":"sjcl"}).find("span",{"class":"company"}).text
+  location=html.find("div",{"class":"sjcl"}).find("span",{"class":"location accessible-contrast-color-location"}).text
+  return {c.strip("\n"),company.strip("\n"),location}
 
-
-def extract_indeed_jobs(a):
+def extract_indeed_jobs(k):
   jobs=[]
-  #for page in range(a):
-    #URL="&start=(page)*10"
-  b_1=b.find_all("div",{"class":"jobsearch-SerpJobCard"})
-  for n in b_1:
-    c=n.find("h2",{"class":"title"}).find("a").text
-    company=n.find("div",{"class":"sjcl"}).find("span",{"class":"company"}).text
-    print(c,company)
+  for page in range(k):
+    print(f"Scrapping page{page}")
+    URL=f"&start={page}*10"
+    r=requests.get(f"https://kr.indeed.com/jobs?q=python{URL}")
+    b=BeautifulSoup(r.text,"html.parser")
+    b_1=b.find_all("div",{"class":"jobsearch-SerpJobCard"})
+    for n in b_1:
+      job=extract_job(n)
+      jobs.append(job)
   return jobs
 
 
