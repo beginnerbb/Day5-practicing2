@@ -2,10 +2,10 @@
 import requests
 from bs4 import BeautifulSoup
 
-r=requests.get("https://kr.indeed.com/jobs?q=python")
-b=BeautifulSoup(r.text,"html.parser")
 
 def extract_indeed_pages():
+  r=requests.get("https://kr.indeed.com/jobs?q=python")
+  b=BeautifulSoup(r.text,"html.parser")
   find_class=b.find("div",{"class":"pagination"})
   get_anchor=find_class.find_all("a")
 
@@ -41,11 +41,11 @@ def extract_indeed_jobs(k):
   jobs=[]
   for page in range(k):
     print(f"Scrapping page{page}")
-    URL=f"&start={page}*10"
-    r=requests.get(f"https://kr.indeed.com/jobs?q=python{URL}")
-    b=BeautifulSoup(r.text,"html.parser")
-    b_1=b.find_all("div",{"class":"jobsearch-SerpJobCard"})
-    for n in b_1:
+    URL=page*10
+    r_1=requests.get(f"https://kr.indeed.com/jobs?q=python&start={URL}")
+    b_1=BeautifulSoup(r_1.text,"html.parser")
+    b_2=b_1.find_all("div",{"class":"jobsearch-SerpJobCard"})
+    for n in b_2:
       job=extract_job(n)
       jobs.append(job)
   return jobs
